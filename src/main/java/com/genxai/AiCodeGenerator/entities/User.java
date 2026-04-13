@@ -3,6 +3,8 @@ package com.genxai.AiCodeGenerator.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -26,8 +28,10 @@ public class User {
      String passwordHash;
      String avatarUrl;
 
-     Instant createdAt;
-     Instant updatedAt;
+    @CreationTimestamp
+    Instant createdAt;
+    @UpdateTimestamp
+    Instant updatedAt;
      Instant deletedAt;
 
 

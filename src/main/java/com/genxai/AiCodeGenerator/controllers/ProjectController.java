@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping
+@RequestMapping("/api/projects")
 @RequiredArgsConstructor
 @RestController
 public class ProjectController {
@@ -49,7 +49,7 @@ public class ProjectController {
 
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{projectId}")
     public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long projectId , @RequestBody ProjectRequest projectRequest){
 
         Long userId = 1L;

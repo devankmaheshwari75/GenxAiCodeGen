@@ -43,10 +43,12 @@ public class ProjectMemberController {
 
 
     @PatchMapping("/{memberId}")
-    public ResponseEntity<ProjectMemberResponse> updateRoleOfMemberInProject(@PathVariable Long projectId , @PathVariable Long memberId , @RequestBody UpdateMemberRoleRequest request){
+    public ResponseEntity<Void> updateRoleOfMemberInProject(@PathVariable Long projectId , @PathVariable Long memberId , @RequestBody UpdateMemberRoleRequest request){
 
         Long userId = 1L;
-        return ResponseEntity.ok(projectMemberService.updateMemberRole(userId , projectId , memberId , request));
+        projectMemberService.updateMemberRole(userId , projectId , memberId , request);
+
+        return ResponseEntity.noContent().build();
 
     }
 

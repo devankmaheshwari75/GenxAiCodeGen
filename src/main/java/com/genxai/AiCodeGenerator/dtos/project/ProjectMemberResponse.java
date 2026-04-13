@@ -6,11 +6,11 @@ import com.genxai.AiCodeGenerator.entities.ProjectRole;
 import java.time.Instant;
 
 public record ProjectMemberResponse (
-        Long id,
+        Long userId,
         String email ,
         String name ,
-        String avatarUrl,
-        ProjectRole role,
+
+        ProjectRole projectRole,
         Instant invitedAt
 ){
 }

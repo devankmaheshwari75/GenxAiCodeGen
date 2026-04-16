@@ -4,7 +4,7 @@ import com.genxai.AiCodeGenerator.entities.ProjectRole;
 
 public record UpdateMemberRoleRequest(
 
-        String email ,
+        String username ,
         ProjectRole role
 
 ) {

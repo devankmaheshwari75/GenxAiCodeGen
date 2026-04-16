@@ -15,6 +15,17 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(
+
+        name = "project",
+
+        indexes = {
+                @Index(
+                        name = "idx_project_owner_deleted_updated",
+                        columnList = "owner_id, deleted_at, updated_at DESC"
+                )
+        }
+)
 public class Project {
 
     @Id

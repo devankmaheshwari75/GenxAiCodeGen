@@ -3,13 +3,11 @@ package com.genxai.AiCodeGenerator.controllers;
 import com.genxai.AiCodeGenerator.dtos.auth.*;
 import com.genxai.AiCodeGenerator.services.AuthService;
 import com.genxai.AiCodeGenerator.services.UserService;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -22,7 +20,7 @@ public class AuthController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> signup (SignupRequest signupRequest){
+    public ResponseEntity<AuthResponse> signup (@RequestBody @Valid SignupRequest signupRequest){
 
         return ResponseEntity.ok(authService.signup(signupRequest));
 
@@ -31,7 +29,7 @@ public class AuthController {
 
     @PostMapping("/login")
 
-    public ResponseEntity<AuthResponse> login(SigninRequest signinRequest){
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid SigninRequest signinRequest){
         return ResponseEntity.ok(authService.login(signinRequest));
 
     }

@@ -5,6 +5,7 @@ import com.genxai.AiCodeGenerator.dtos.project.ProjectMemberResponse;
 import com.genxai.AiCodeGenerator.dtos.project.UpdateMemberRoleRequest;
 import com.genxai.AiCodeGenerator.entities.ProjectMember;
 import com.genxai.AiCodeGenerator.services.ProjectMemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class ProjectMemberController {
     }
 
     @PostMapping()
-    public ResponseEntity<ProjectMemberResponse> inviteByEmail(@PathVariable Long projectId , @RequestBody InviteMemberRequest request ){
+    public ResponseEntity<ProjectMemberResponse> inviteByEmail(@PathVariable Long projectId , @RequestBody @Valid  InviteMemberRequest request ){
 
         Long userId =1L;
         return ResponseEntity.status(HttpStatus.CREATED).body(projectMemberService.inviteMember(projectId, request , userId));

@@ -7,7 +7,7 @@ import java.time.Instant;
 
 public record ProjectMemberResponse (
         Long userId,
-        String email ,
+        String username ,
         String name ,
 
         ProjectRole projectRole,

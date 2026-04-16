@@ -1,8 +1,11 @@
 package com.genxai.AiCodeGenerator.dtos.project;
 
-public record ProjectRequest(
+import jakarta.validation.constraints.NotBlank;
 
+public record ProjectRequest(
+        @NotBlank
         String name
+
 
 ) {
 }

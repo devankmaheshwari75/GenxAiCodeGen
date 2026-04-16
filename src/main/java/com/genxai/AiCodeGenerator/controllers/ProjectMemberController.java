@@ -5,6 +5,7 @@ import com.genxai.AiCodeGenerator.dtos.project.ProjectMemberResponse;
 import com.genxai.AiCodeGenerator.dtos.project.UpdateMemberRoleRequest;
 import com.genxai.AiCodeGenerator.entities.ProjectMember;
 import com.genxai.AiCodeGenerator.services.ProjectMemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class ProjectMemberController {
     }
 
     @PostMapping()
-    public ResponseEntity<ProjectMemberResponse> inviteByEmail(@PathVariable Long projectId , @RequestBody InviteMemberRequest request ){
+    public ResponseEntity<ProjectMemberResponse> inviteByEmail(@PathVariable Long projectId , @RequestBody @Valid  InviteMemberRequest request ){
 
         Long userId =1L;
         return ResponseEntity.status(HttpStatus.CREATED).body(projectMemberService.inviteMember(projectId, request , userId));
@@ -43,10 +44,12 @@ public class ProjectMemberController {
 
 
     @PatchMapping("/{memberId}")
-    public ResponseEntity<ProjectMemberResponse> updateRoleOfMemberInProject(@PathVariable Long projectId , @PathVariable Long memberId , @RequestBody UpdateMemberRoleRequest request){
+    public ResponseEntity<Void> updateRoleOfMemberInProject(@PathVariable Long projectId , @PathVariable Long memberId , @RequestBody UpdateMemberRoleRequest request){
 
         Long userId = 1L;
-        return ResponseEntity.ok(projectMemberService.updateMemberRole(userId , projectId , memberId , request));
+        projectMemberService.updateMemberRole(userId , projectId , memberId , request);
+
+        return ResponseEntity.noContent().build();
 
     }
 

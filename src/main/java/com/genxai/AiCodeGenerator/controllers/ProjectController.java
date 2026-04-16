@@ -4,15 +4,17 @@ import com.genxai.AiCodeGenerator.dtos.project.ProjectRequest;
 import com.genxai.AiCodeGenerator.dtos.project.ProjectResponse;
 import com.genxai.AiCodeGenerator.dtos.project.ProjectSummaryResponse;
 import com.genxai.AiCodeGenerator.services.ProjectService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping
+@RequestMapping("/api/projects")
 @RequiredArgsConstructor
 @RestController
 public class ProjectController {
@@ -40,7 +42,7 @@ public class ProjectController {
 
     }
     @PostMapping
-    public ResponseEntity<ProjectResponse> createProject(@RequestBody ProjectRequest projectRequest){
+    public ResponseEntity<ProjectResponse> createProject(@RequestBody @Valid ProjectRequest projectRequest){
 
         Long userId = 1L;
         return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(projectRequest , userId));
@@ -49,8 +51,8 @@ public class ProjectController {
 
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long projectId , @RequestBody ProjectRequest projectRequest){
+    @PatchMapping("/{projectId}")
+    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long projectId , @RequestBody @Valid  ProjectRequest projectRequest){
 
         Long userId = 1L;
         return ResponseEntity.ok(projectService.updateProject(userId , projectId , projectRequest));

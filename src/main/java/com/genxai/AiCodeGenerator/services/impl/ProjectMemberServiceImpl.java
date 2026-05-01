@@ -1,5 +1,6 @@
 package com.genxai.AiCodeGenerator.services.impl;
 
+import com.genxai.AiCodeGenerator.config.AuthUtil;
 import com.genxai.AiCodeGenerator.dtos.project.InviteMemberRequest;
 import com.genxai.AiCodeGenerator.dtos.project.ProjectMemberResponse;
 import com.genxai.AiCodeGenerator.dtos.project.UpdateMemberRoleRequest;
@@ -7,6 +8,7 @@ import com.genxai.AiCodeGenerator.entities.Project;
 import com.genxai.AiCodeGenerator.entities.ProjectMember;
 import com.genxai.AiCodeGenerator.entities.ProjectMemberId;
 import com.genxai.AiCodeGenerator.entities.User;
+import com.genxai.AiCodeGenerator.errors.BadRequestException;
 import com.genxai.AiCodeGenerator.mapper.ProjectMemberMapper;
 import com.genxai.AiCodeGenerator.repositories.ProjectMemberRepository;
 import com.genxai.AiCodeGenerator.repositories.ProjectRepository;
@@ -15,6 +17,7 @@ import com.genxai.AiCodeGenerator.services.ProjectMemberService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,55 +30,55 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 
+
+
 public class ProjectMemberServiceImpl implements ProjectMemberService {
     ProjectMemberRepository projectMemberRepository;
     UserRepository userRepository;
     ProjectRepository projectRepository;
     ProjectMemberMapper projectMemberMapper;
+    AuthUtil authUtil;
+
 
     @Override
-    public List<ProjectMemberResponse> getAllMembers(Long projectId, Long userId) {
-
-        Project project = getAccesibleProjectById(projectId, userId);
-
-        List<ProjectMemberResponse> memberResponsesList = new ArrayList<>();
-
-        memberResponsesList.add(projectMemberMapper.userToProjectMemberResponse(project.getOwner()));
+    @PreAuthorize("@security.canViewMembers(#projectId)")
+    public List<ProjectMemberResponse> getAllMembers(Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
 
 
 
         List<ProjectMemberResponse> members =   projectMemberRepository.findByIdProjectId(projectId).stream().map(projectMemberMapper::projectMemberToProjectMemberResponse)
                 .toList();
-        memberResponsesList.addAll(members);
-
-
-
-        return memberResponsesList;
+        return new ArrayList<>(members);
 
     }
 
     @Override
-    public ProjectMemberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId) {
+    @PreAuthorize("@security.canManageMembers(#projectId)")
+    public ProjectMemberResponse inviteMember(Long projectId, InviteMemberRequest request) {
+
+        Long userId = authUtil.getCurrentUserId();
 
         Project project  = getAccesibleProjectById(projectId , userId);
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("User is not the owner of the project");
 
-
-        }
 
         User invitee = userRepository.findByUsername(request.username()).orElseThrow();
+
         if(invitee.getId().equals(userId)){
-            throw new RuntimeException("Cannot invite yourself");
+            throw new BadRequestException("Cannot invite yourself");
 
         }
 
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId , invitee.getId());
 
+        System.out.println("hi there after project member id ");
+
         if(projectMemberRepository.existsById(projectMemberId)){
-            throw new RuntimeException("Cannot invite again");
+            System.out.println("same projectmember id");
+            throw new BadRequestException("Cannot invite again");
 
         }
+
 
         ProjectMember member = ProjectMember.builder()
                 .id(projectMemberId)
@@ -85,6 +88,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
                 .invitedAt(Instant.now())
                 .build();
 
+
+
         projectMemberRepository.save(member);
         return projectMemberMapper.projectMemberToProjectMemberResponse(member);
 
@@ -92,50 +97,50 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public void updateMemberRole(Long userId, Long projectId, Long memberId, UpdateMemberRoleRequest request) {
+    @PreAuthorize("@security.canManageMembers(#projectId)")
+    public ProjectMemberResponse updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequest request) {
 
-//        check userId is owner of the project
-//        owner is not asking to change his role
-//        check whether member is a part of the project of
-
-//        update the role of the member
-
+        Long userId = authUtil.getCurrentUserId();
         Project project  = getAccesibleProjectById(projectId , userId);
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("User is not the owner of the project");
+
+//         check whether owneer is not changing its own role
+
+        User userToBeUpdated  = userRepository.findByUsername(request.username()).orElseThrow();
+
+        if(userToBeUpdated.getId().equals(userId)){
+            throw new BadRequestException("Owner cant change his own role");
 
         }
 
-        if(userId.equals(memberId)){
-         throw new RuntimeException("Owner cannot change his role");
+//        check whether the usertobeupdated is the part of the project or not
 
-        }
+        ProjectMemberId id   = new ProjectMemberId(projectId , userToBeUpdated.getId());
+        ProjectMember projectMember = projectMemberRepository.findById(id).orElseThrow( ()->  new BadRequestException("Member is not part of project"));
 
-        if(!projectMemberRepository.existsByIdProjectIdAndIdUserId(projectId , memberId)){
-            throw new RuntimeException("Given user is not a member of the project");
 
-        }
-
-        ProjectMember projectMember = projectMemberRepository.findByIdProjectIdAndIdUserId(projectId , memberId);
 
         projectMember.setProjectRole(request.role());
-
         projectMemberRepository.save(projectMember);
+
+        return projectMemberMapper.projectMemberToProjectMemberResponse(projectMember);
+
+
+
+
+
 
 
 
     }
     @Transactional
     @Override
+    @PreAuthorize("@security.canManageMembers(#projectId)")
     public void deleteMember(Long projectId, Long memberId) {
-
 
         if(!projectMemberRepository.existsByIdProjectIdAndIdUserId(projectId , memberId)){
             throw new RuntimeException("user is not a member of the project");
-
         }
         projectMemberRepository.deleteByIdProjectIdAndUserId(projectId, memberId);
-
 
     }
 

@@ -27,8 +27,7 @@ public class ProjectMemberController {
 
         Long userId = 1L;
 
-
-        return ResponseEntity.ok(projectMemberService.getAllMembers(projectId , userId));
+        return ResponseEntity.ok(projectMemberService.getAllMembers(projectId));
 
 
 
@@ -37,19 +36,18 @@ public class ProjectMemberController {
     @PostMapping()
     public ResponseEntity<ProjectMemberResponse> inviteByEmail(@PathVariable Long projectId , @RequestBody @Valid  InviteMemberRequest request ){
 
-        Long userId =1L;
-        return ResponseEntity.status(HttpStatus.CREATED).body(projectMemberService.inviteMember(projectId, request , userId));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(projectMemberService.inviteMember(projectId, request ));
 
     }
 
 
     @PatchMapping("/{memberId}")
-    public ResponseEntity<Void> updateRoleOfMemberInProject(@PathVariable Long projectId , @PathVariable Long memberId , @RequestBody UpdateMemberRoleRequest request){
+    public ResponseEntity<ProjectMemberResponse> updateRoleOfMemberInProject(@PathVariable Long projectId , @PathVariable Long memberId , @RequestBody UpdateMemberRoleRequest request){
 
-        Long userId = 1L;
-        projectMemberService.updateMemberRole(userId , projectId , memberId , request);
+        ;
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(projectMemberService.updateMemberRole(projectId , memberId , request));
 
     }
 

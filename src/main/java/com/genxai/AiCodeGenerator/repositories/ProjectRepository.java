@@ -14,19 +14,25 @@ import java.util.Optional;
 
 @Repository
 @Transactional
-public interface ProjectRepository extends JpaRepository<Project, Long> {
+public interface  ProjectRepository extends JpaRepository<Project, Long> {
 
 
     @Query("""
-            SELECT p from Project p where p.deletedAt is null and p.owner.id = :userId order by p.updatedAt desc
+           Select p as project , pm.projectRole as role 
+           From Project p JOIN ProjectMember  pm 
+           ON pm.project.id = p.id
+           WHERE pm.user.id =:userId 
+           AND p.deletedAt IS NULL
+           ORDER BY p.updatedAt DESC
+           
             """)
     List<Project> findAllAccessibleByUser(@Param("userId") Long userId);
 
 
     @Modifying
     @Query("""
-             update Project p set p.deletedAt = CURRENT_TIMESTAMP where p.id = :projectId and p.owner.id =:userId
-             and p.deletedAt is null   
+             update Project p set p.deletedAt = CURRENT_TIMESTAMP where p.id = :projectId 
+             AND p.deletedAt is null   
              """)
     int softDelete(@Param("userId") Long userId, @Param("projectId") Long projectId);
 
@@ -34,10 +40,14 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 
     @Query("""
-            Select p from Project p left join fetch p.owner
-            where p.id = :projectId and 
-            p.deletedAt is null and p.owner.id =:userId
-            
+            SELECT p FROM Project p
+            WHERE p.id = :projectId
+                AND p.deletedAt IS NULL
+                AND EXISTS (
+                    SELECT 1 FROM ProjectMember pm
+                    WHERE pm.id.userId = :userId
+                    AND pm.id.projectId = :projectId
+                )
             """)
     Optional<Project> findAccessibleProjectById(@Param("projectId") Long projectId , @Param("userId") Long userId);
 

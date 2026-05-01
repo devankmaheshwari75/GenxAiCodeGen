@@ -8,7 +8,6 @@ public record ProjectResponse(
         Long id ,
 
         String name ,
-        UserProfileResponse user,
         Instant createdAt,
         Instant updatedAt
 ) {

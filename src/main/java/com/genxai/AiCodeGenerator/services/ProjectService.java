@@ -7,12 +7,12 @@ import com.genxai.AiCodeGenerator.dtos.project.ProjectSummaryResponse;
 import java.util.List;
 
 public interface ProjectService {
-    public List<ProjectSummaryResponse> getUserProjects(Long userId) ;
-    public ProjectResponse getProjectById(Long id, Long projectId) ;
+    public List<ProjectSummaryResponse> getUserProjects() ;
+    public ProjectResponse getProjectById( Long projectId) ;
 
-    public ProjectResponse updateProject(Long userId, Long projectId, ProjectRequest projectRequest) ;
+    public ProjectResponse updateProject(Long projectId, ProjectRequest projectRequest) ;
 
-    public ProjectResponse createProject(ProjectRequest projectRequest, Long userId) ;
+    public ProjectResponse createProject(ProjectRequest projectRequest) ;
 
-    public void softDelete(Long userId, Long id) ;
+    public void softDelete( Long id) ;
 }

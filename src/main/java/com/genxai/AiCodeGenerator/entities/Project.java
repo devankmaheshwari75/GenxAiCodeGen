@@ -20,10 +20,7 @@ import java.time.Instant;
         name = "project",
 
         indexes = {
-                @Index(
-                        name = "idx_project_owner_deleted_updated",
-                        columnList = "owner_id, deleted_at, updated_at DESC"
-                )
+                @Index(name = "idx_projects_deleted_at_updated_at_desc", columnList = "deleted_at, updated_at DESC"),
         }
 )
 public class Project {
@@ -32,9 +29,7 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id ;
     String name ;
-    @ManyToOne
-    @JoinColumn()
-    User owner;
+
     Boolean isPublic ;
 
     @CreationTimestamp

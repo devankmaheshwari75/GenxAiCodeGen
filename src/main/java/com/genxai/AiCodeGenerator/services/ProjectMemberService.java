@@ -7,11 +7,11 @@ import com.genxai.AiCodeGenerator.dtos.project.UpdateMemberRoleRequest;
 import java.util.List;
 
 public interface ProjectMemberService {
-    public List<ProjectMemberResponse> getAllMembers(Long projectId, Long id) ;
+    public List<ProjectMemberResponse> getAllMembers(Long projectId) ;
 
-    public ProjectMemberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId);
+    public ProjectMemberResponse inviteMember(Long projectId, InviteMemberRequest request);
 
-    public void updateMemberRole(Long userId, Long projectId, Long memberId, UpdateMemberRoleRequest request) ;
+    public ProjectMemberResponse updateMemberRole( Long projectId, Long memberId, UpdateMemberRoleRequest request) ;
 
     public void deleteMember(Long projectId, Long memberId) ;
 }

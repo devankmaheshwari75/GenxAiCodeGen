@@ -24,8 +24,8 @@ public class ProjectController {
     @GetMapping()
     public ResponseEntity<List<ProjectSummaryResponse>> getAllUserProjects(){
 
-        Long userId = 1L;
-        return ResponseEntity.ok(projectService.getUserProjects(userId));
+
+        return ResponseEntity.ok(projectService.getUserProjects());
 
 
     }
@@ -33,10 +33,10 @@ public class ProjectController {
     @GetMapping("/{projectId}")
     public ResponseEntity<ProjectResponse> getProjectById(@PathVariable Long projectId){
 
-        Long userId = 1L;
 
 
-        return ResponseEntity.ok(projectService.getProjectById(userId , projectId));
+
+        return ResponseEntity.ok(projectService.getProjectById(  projectId));
 
 
 
@@ -44,8 +44,8 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<ProjectResponse> createProject(@RequestBody @Valid ProjectRequest projectRequest){
 
-        Long userId = 1L;
-        return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(projectRequest , userId));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(projectRequest  ));
 
 
 
@@ -54,16 +54,16 @@ public class ProjectController {
     @PatchMapping("/{projectId}")
     public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long projectId , @RequestBody @Valid  ProjectRequest projectRequest){
 
-        Long userId = 1L;
-        return ResponseEntity.ok(projectService.updateProject(userId , projectId , projectRequest));
+
+        return ResponseEntity.ok(projectService.updateProject(  projectId , projectRequest));
 
     }
 
     @DeleteMapping("/{id}")
 
     public ResponseEntity<Void> deleteProject(@PathVariable Long id){
-        Long userId = 1L;
-        projectService.softDelete(userId , id);
+
+        projectService.softDelete( id);
 
 
         return ResponseEntity.noContent().build();
